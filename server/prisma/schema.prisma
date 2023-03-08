@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Register {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  value       Float
+  date        DateTime @default(now())
+
+  type_id       String?
+  category_id   String?
+  method_id     String?
+  recurrence_id Int?
+
+  type       Type?       @relation(fields: [type_id], references: [id])
+  category   Category?   @relation(fields: [category_id], references: [id])
+  method     Method?     @relation(fields: [method_id], references: [id])
+  recurrence Recurrence? @relation(fields: [recurrence_id], references: [id])
+
+  @@unique([recurrence_id])
+  @@map("registers")
+}
+
+model Type {
+  id         String     @id @default(uuid())
+  name       String
+  definition String
+  Register   Register[]
+
+  @@unique([name])
+  @@map("types")
+}
+
+model Category {
+  id       String     @id @default(uuid())
+  name     String
+  Register Register[]
+
+  @@unique([name])
+  @@map("categories")
+}
+
+model Method {
+  id       String     @id @default(uuid())
+  name     String
+  bank     String?
+  Register Register[]
+
+  @@unique([name, bank])
+  @@map("methods")
+}
+
+model Recurrence {
+  id                       Int        @id @default(autoincrement())
+  frequency                String
+  repeat_every             Int        @default(1)
+  repeat_when              String?
+  end_date                 DateTime?
+  end_after_repeated_times Int?
+  medium_value             Float?
+  medium_tax               Float?
+  Register                 Register[]
+
+  @@map("recurrencies")
+}
