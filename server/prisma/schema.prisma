@@ -17,8 +17,8 @@ datasource db {
 model Register {
   id          Int      @id @default(autoincrement())
   title       String
-  description String?
   value       Float
+  pendingStatus     Boolean  @default(true)
   date        DateTime @default(now())
 
   type_id       String?

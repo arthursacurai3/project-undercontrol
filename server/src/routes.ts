@@ -5,7 +5,7 @@ import { z } from 'zod'
 export async function appRoutes(app: FastifyInstance) {
 
     app.post('/recurrence', async (request, reply) => {
-        const createRecurrenceBody = z.object({
+        const createRecurrenceBody = z.object({ 
             frequency: z.string(),
             repeat_every: z.number(),
             repeat_when: z.string().optional(),
@@ -25,7 +25,6 @@ export async function appRoutes(app: FastifyInstance) {
             medium_tax
         } = createRecurrenceBody.parse(request.body)
 
-
         const result = await prisma.recurrence.create({
             data: {
                 frequency,
@@ -42,23 +41,21 @@ export async function appRoutes(app: FastifyInstance) {
     })
 
     app.post('/registers', async (request ,reply) => {
-        console.log('###########')
         const createRegisterBody = z.object({
             title: z.string(),
-            description: z.string().max(100).optional(),
             value: z.number(),
-            date: z.coerce.date(),
+            pendingStatus: z.boolean(),
+            date: z.string(),
             category_id: z.string().optional(),
             type_id: z.string().optional(),
             method_id: z.string().optional(),
             recurrence_id: z.number().optional()
         })
 
-
         const {
             title,
-            description,
             value,
+            pendingStatus,
             date,
             category_id,
             type_id,
@@ -66,19 +63,21 @@ export async function appRoutes(app: FastifyInstance) {
             recurrence_id
         } = createRegisterBody.parse(request.body)
 
+        const _date = new Date(date)
+
         const result = await prisma.register.create({
             data: {
                 title: title,
-                description: description,
                 value: value,
-                date: date,
+                pendingStatus: pendingStatus,
+                date: _date,
                 category_id: category_id,
                 type_id: type_id,
                 method_id : method_id,
                 recurrence_id: recurrence_id
             }
         })
-
+        
         reply.send(result)
     })
 
@@ -167,11 +166,24 @@ export async function appRoutes(app: FastifyInstance) {
         return summary
     })
 
-    app.get('/registers', async () => {
-        console.log('XxXXXxxxxxxxx')
-        const registers = await prisma.register.findMany({
-            orderBy: [{id: 'desc'}]
+    app.get('/registers', async (request) => {
+        const createRegistersBody = z.object({
+            startDate: z.coerce.date(),
+            endDate: z.coerce.date()
         })
+
+        const {startDate, endDate} = createRegistersBody.parse(request.query)
+
+        const registers = await prisma.register.findMany({
+            where: {
+                date: {
+                    lte: endDate,
+                    gte: startDate
+                }
+            },
+            orderBy: [{date: 'desc'}]
+        })
+
         return registers
     })
 
@@ -192,7 +204,6 @@ export async function appRoutes(app: FastifyInstance) {
 
     app.delete('/register/:id/delete', async (request, reply) => {
 
-        console.log('-----delete api')
         const idPassedToDelete = z.object({
             id: z.string().transform(Number)
         })

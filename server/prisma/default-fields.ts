@@ -5,7 +5,7 @@ export type Type = {
 }
 
 const fixed_expenses: Type = {
-    name: 'Despesas fixos',
+    name: 'Despesas fixas',
     definition: 'Depesas fixas e recorrentes, Ex: aluguel, iptu, internet, etc.'
 }
 
@@ -29,6 +29,11 @@ const savings: Type = {
     definition: 'Dinheiro guardado, Ex: Reserva de emergência'
 }
 
+const income: Type = {
+    name: 'Renda',
+    definition: 'Renda'
+}
+
 // ------- Category -------
 export type Category = string[]
 
@@ -48,7 +53,10 @@ const categories = [
     'Faculdade',
     'Escola',
     'Material escolar',
-    'Esporte'
+    'Esporte',
+    'Salário',
+    'Trabalho',
+    'Rendimento investimento'
 ]
 
 // ------- methodies -------
@@ -59,16 +67,16 @@ export type Method = {
 
 const banksArr = [
     'Banco do Brasil',
-    'Caixa',
-    'Itaú',
-    'Santander',
-    'Bradesco',
-    'Safra',
-    'Nubank',
-    'Inter',
-    'C6 Bank',
-    'Pic Pay',
-    'Neo'
+    'Nubank'
+    // 'Caixa',
+    // 'Itaú',
+    // 'Santander',
+    // 'Bradesco',
+    // 'Safra',
+    // 'Inter',
+    // 'C6 Bank',
+    // 'Pic Pay',
+    // 'Neo'
 ]
 
 const money: Method = {
@@ -117,7 +125,8 @@ export const defaultFields = {
         fixed_expenses_variable_value,
         variable_expenses,
         investments,
-        savings
+        savings,
+        income
     ],
 
     categories,
@@ -132,5 +141,3 @@ export const defaultFields = {
     ]
 
 }
-
-console.log(defaultFields)
